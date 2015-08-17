@@ -1,5 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Network.Yahoo.Finance where
+module Network.Yahoo.Finance
+  ( getStockQuote
+  , StockQuote(..)
+  ) where
 
 import           Control.Applicative  ((<$>), (<*>))
 import           Control.Lens
@@ -48,6 +51,12 @@ runRequest yql = do
 run :: T.Text -> IO (Maybe YahooResponse)
 run query = (\r -> return $ decode r :: IO (Maybe YahooResponse)) =<< runRequest query
 
+stockQuote :: T.Text -> T.Text
 stockQuote symbol = "select * from yahoo.finance.quote where symbol in (\"" <> symbol <> "\")"
 
-getStockQuote = run . stockQuote
+-- Fetch a stock quote from Yahoo Finance
+-- getStockQuote (T.pack "GOOGL")
+getStockQuote :: T.Text -> IO (Maybe StockQuote)
+getStockQuote symbol = do
+  response <- run . stockQuote $ symbol
+  return $ quote <$> response
