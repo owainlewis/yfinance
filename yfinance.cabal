@@ -1,0 +1,22 @@
+name:                yfinance
+version:             0.1.0.0
+license-file:        LICENSE
+author:              Owain Lewis
+maintainer:          owain@owainlewis.com
+category:            Network
+build-type:          Simple
+cabal-version:       >=1.10
+
+library
+  exposed-modules:
+    Network.Yahoo.Finance
+  build-depends:
+    base >=4.7 && <4.8,
+    wreq,
+    aeson,
+    lens,
+    bytestring,
+    text,
+    containers
+  hs-source-dirs:      src
+  default-language:    Haskell2010
