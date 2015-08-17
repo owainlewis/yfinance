@@ -6,6 +6,7 @@ A Haskell interface to Yahoo Finance
 
 module Example where
 
+import qualified Data.Text as T
 import Network.Yahoo.Finance
 
 getStockQuote (T.pack "YHOO")
