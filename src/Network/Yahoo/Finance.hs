@@ -1,3 +1,4 @@
+{-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Network.Yahoo.Finance
   ( getStockQuote
@@ -15,16 +16,34 @@ import qualified Data.Text            as T
 import           Network.Wreq
 
 data StockQuote = StockQuote {
-    name   :: String
-  , symbol :: String
-  , price  :: String
-} deriving ( Show )
+    name      :: String
+  , symbol    :: String
+  , price     :: String
+  , change    :: String
+  , dayHigh   :: String
+  , dayLow    :: String
+  , yearHigh  :: String
+  , yearLow   :: String
+  , volume    :: String
+  , marketCap :: String
+} deriving ( Show, Ord, Eq )
+
+toFloat :: String -> Float
+toFloat s = read s :: Float
 
 instance FromJSON StockQuote where
     parseJSON (Object o) =
         StockQuote <$> o .: "Name"
                    <*> o .: "Symbol"
                    <*> o .: "LastTradePriceOnly"
+                   <*> o .: "Change"
+                   <*> o .: "DaysHigh"
+                   <*> o .: "DaysLow"
+                   <*> o .: "YearHigh"
+                   <*> o .: "YearLow"
+                   <*> o .: "Volume"
+                   <*> o .: "MarketCapitalization"
+
     parseJSON _ = mzero
 
 data YahooResponse = YahooResponse {
