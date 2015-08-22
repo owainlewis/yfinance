@@ -2,7 +2,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Network.Yahoo.Finance
   ( getStockQuote
-  , fetchQuote
   , StockQuote(..)
   , nasdaq
   , sp500
@@ -14,9 +13,11 @@ import           Control.Applicative  ((<$>), (<*>))
 import           Control.Lens
 import           Control.Monad        (mzero)
 import           Data.Aeson
-import           Data.ByteString.Lazy as LBS
+import           Data.ByteString.Lazy as LBS hiding (intercalate, map)
+import           Data.List            (intercalate)
 import qualified Data.Map             as M
-import           Data.Monoid          ((<>))
+import           Data.Monoid          (Monoid, mconcat, (<>))
+import           Data.String          (IsString)
 import qualified Data.Text            as T
 import           Network.Wreq
 
@@ -71,26 +72,29 @@ runRequest yql = do
   r <- getWith opts yahoo
   return $ r ^. responseBody
 
-run :: T.Text -> IO (Maybe YahooResponse)
-run query = decode <$> runRequest query
+run :: String -> IO (Maybe YahooResponse)
+run query = decode <$> runRequest (T.pack query)
 
-stockQuote :: T.Text -> T.Text
-stockQuote symbol = "select * from yahoo.finance.quote where symbol in (\"" <> symbol <> "\")"
+quoteString s = "\"" <> s <> "\""
+
+-- | Generates a YQL query for 1 or more stock symbols
+--
+generateYQLQuery :: [String] -> String
+generateYQLQuery xs = "select * from yahoo.finance.quote where symbol in " <> query
+    where stocks = (intercalate ", ") . (map quoteString) $ xs
+          query = mconcat ["(", stocks, ")"]
 
 -- | Fetch a stock quote from Yahoo Finance eg. getStockQuote (T.pack "GOOGL")
-getStockQuote :: T.Text -> IO (Maybe StockQuote)
-getStockQuote symbol = fmap quote <$> (run . stockQuote $ symbol)
-
-fetchQuote :: String -> IO (Maybe StockQuote)
-fetchQuote quote = getStockQuote $ T.pack quote
+getStockQuote :: String -> IO (Maybe StockQuote)
+getStockQuote symbol = fmap quote <$> (run $ generateYQLQuery [symbol])
 
 -- US Indexes
 
 nasdaq :: IO (Maybe StockQuote)
-nasdaq = fetchQuote "^NDX"
+nasdaq = getStockQuote "^NDX"
 
 sp500 :: IO (Maybe StockQuote)
-sp500 = fetchQuote "^GSPC"
+sp500 = getStockQuote "^GSPC"
 
 -- EU Indexes
 
@@ -98,8 +102,8 @@ sp500 = fetchQuote "^GSPC"
 
 -- FTSE 100 (^FTSE) -FTSE
 ftse :: IO (Maybe StockQuote)
-ftse = fetchQuote "^FTSE"
+ftse = getStockQuote "^FTSE"
 
 -- FTSE AIM Index
 aim :: IO (Maybe StockQuote)
-aim = fetchQuote "^FTAI"
+aim = getStockQuote "^FTAI"
