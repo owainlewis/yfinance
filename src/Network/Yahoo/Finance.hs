@@ -86,7 +86,7 @@ quoteString s = "\"" <> s <> "\""
 generateYQLQuery :: [String] -> String
 generateYQLQuery xs = "select * from yahoo.finance.quote where symbol in " <> query
     where stocks = (intercalate ", ") . (map quoteString) $ xs
-          query = mconcat ["(", stocks, ")"]
+          query  = mconcat ["(", stocks, ")"]
 
 -- | Fetch a stock quote from Yahoo Finance eg. getStockQuote (T.pack "GOOGL")
 getStockQuote :: String -> IO (Maybe StockQuote)
