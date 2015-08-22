@@ -1,6 +1,6 @@
 # YFinance
 
-A Haskell interface to Yahoo Finance
+A Haskell library for querying real time stock market data including indexes such as NASDAQ and the S&P500
 
 ```haskell
 
