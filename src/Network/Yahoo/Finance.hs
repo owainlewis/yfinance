@@ -2,7 +2,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Network.Yahoo.Finance
   ( getStockQuote
+  , fetchQuote
   , StockQuote(..)
+  , nasdaq
+  , sp500
+  , ftse
+  , aim
   ) where
 
 import           Control.Applicative  ((<$>), (<*>))
