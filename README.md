@@ -15,6 +15,8 @@ getStockQuote "YHOO"
 
 ## Get the current stock price for a company
 
+Yahoo finance responses are all strings so you will need to cast the response to a double.
+
 ```haskell
 -- Get the current price for Google stock
 fmap (toDouble . price) <$> getStockQuote "GOOGL"
