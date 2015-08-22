@@ -24,11 +24,11 @@ import Network.Yahoo.Finance
 
 --λ> nasdaq
 -- Just (StockQuote {name = "NASDAQ-100",
-                    symbol = "^NDX",
-                    price = "4197.27",
-					change = "-187.86",
-				    dayHigh = "4361.32",
-					dayLow = "4197.27",
-					yearHigh = "4694.13",
-					yearLow = "3700.23"})
+--                   symbol = "^NDX",
+--                   price = "4197.27",
+--                   change = "-187.86",
+--                   dayHigh = "4361.32",
+--                   dayLow = "4197.27",
+--                   yearHigh = "4694.13",
+--                   yearLow = "3700.23"})
 ```
