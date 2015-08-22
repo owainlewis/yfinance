@@ -75,6 +75,10 @@ runRequest yql = do
 run :: String -> IO (Maybe YahooResponse)
 run query = decode <$> runRequest (T.pack query)
 
+runMany :: String -> IO (Maybe [YahooResponse])
+runMany query = decode <$> runRequest (T.pack query)
+
+quoteString :: (Monoid m, IsString m) => m -> m
 quoteString s = "\"" <> s <> "\""
 
 -- | Generates a YQL query for 1 or more stock symbols
@@ -88,7 +92,7 @@ generateYQLQuery xs = "select * from yahoo.finance.quote where symbol in " <> qu
 getStockQuote :: String -> IO (Maybe StockQuote)
 getStockQuote symbol = fmap quote <$> (run $ generateYQLQuery [symbol])
 
--- US Indexes
+-- Indexes
 
 nasdaq :: IO (Maybe StockQuote)
 nasdaq = getStockQuote "^NDX"
@@ -96,14 +100,8 @@ nasdaq = getStockQuote "^NDX"
 sp500 :: IO (Maybe StockQuote)
 sp500 = getStockQuote "^GSPC"
 
--- EU Indexes
-
--- UK Indexes
-
--- FTSE 100 (^FTSE) -FTSE
 ftse :: IO (Maybe StockQuote)
 ftse = getStockQuote "^FTSE"
 
--- FTSE AIM Index
 aim :: IO (Maybe StockQuote)
 aim = getStockQuote "^FTAI"

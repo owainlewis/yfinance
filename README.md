@@ -7,10 +7,18 @@ A Haskell library for querying real time stock market data including indexes suc
 module Example where
 
 import qualified Data.Text as T
-import qualified Network.Yahoo.Finance as YF
+import Network.Yahoo.Finance
 
-YF.getStockQuote (T.pack "YHOO")
+getStockQuote (T.pack "YHOO")
 
+```
+
+## Get the current stock price for a company
+
+```haskell
+-- Get the current price for Google stock
+-- λ> fmap (toDouble . price) <$> getStockQuote "GOOGL"
+-- Just 644.03
 ```
 
 ## Popular stock indexes
