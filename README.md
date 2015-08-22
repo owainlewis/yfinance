@@ -9,7 +9,7 @@ module Example where
 import qualified Data.Text as T
 import Network.Yahoo.Finance
 
-getStockQuote (T.pack "YHOO")
+getStockQuote "YHOO"
 
 ```
 
@@ -17,7 +17,7 @@ getStockQuote (T.pack "YHOO")
 
 ```haskell
 -- Get the current price for Google stock
--- λ> fmap (toDouble . price) <$> getStockQuote "GOOGL"
+fmap (toDouble . price) <$> getStockQuote "GOOGL"
 -- Just 644.03
 ```
 
