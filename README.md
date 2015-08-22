@@ -7,9 +7,9 @@ A Haskell library for querying real time stock market data including indexes suc
 module Example where
 
 import qualified Data.Text as T
-import Network.Yahoo.Finance
+import qualified Network.Yahoo.Finance as YF
 
-getStockQuote (T.pack "YHOO")
+YF.getStockQuote (T.pack "YHOO")
 
 ```
 
@@ -18,8 +18,8 @@ getStockQuote (T.pack "YHOO")
 There are some helper methods for accessing popular indexes such as the S&P500 or NASDAQ
 
 ```haskell
+module Example where
 
-import qualified Data.Text as T
 import Network.Yahoo.Finance
 
 --λ> nasdaq
