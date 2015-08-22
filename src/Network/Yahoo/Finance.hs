@@ -46,11 +46,11 @@ instance FromJSON StockQuote where
                    <*> o .: "YearLow"
     parseJSON _ = mzero
 
-data StockQuoteList = StockQuoteList {
+newtype StockQuoteList = StockQuoteList {
     stocks :: [StockQuote]
 } deriving ( Show )
 
-data YahooResponse = YahooResponse {
+newtype YahooResponse = YahooResponse {
     quote :: StockQuote
 } deriving ( Show )
 
@@ -72,14 +72,14 @@ runRequest yql = do
   return $ r ^. responseBody
 
 run :: T.Text -> IO (Maybe YahooResponse)
-run query = (\r -> return $ decode r :: IO (Maybe YahooResponse)) =<< runRequest query
+run query = decode <$> runRequest query
 
 stockQuote :: T.Text -> T.Text
 stockQuote symbol = "select * from yahoo.finance.quote where symbol in (\"" <> symbol <> "\")"
 
 -- | Fetch a stock quote from Yahoo Finance eg. getStockQuote (T.pack "GOOGL")
 getStockQuote :: T.Text -> IO (Maybe StockQuote)
-getStockQuote symbol = (run . stockQuote $ symbol) >>= (\rsp -> return $ quote `fmap` rsp)
+getStockQuote symbol = fmap quote <$> (run . stockQuote $ symbol)
 
 fetchQuote :: String -> IO (Maybe StockQuote)
 fetchQuote quote = getStockQuote $ T.pack quote

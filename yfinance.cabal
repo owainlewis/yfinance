@@ -6,12 +6,13 @@ maintainer:          owain@owainlewis.com
 category:            Network
 build-type:          Simple
 cabal-version:       >=1.10
+tested-with:         GHC == 7.8.4, GHC == 7.10.2
 
 library
   exposed-modules:
     Network.Yahoo.Finance
   build-depends:
-    base >=4.7 && <4.8,
+    base >=4.7 && <5,
     wreq,
     aeson,
     lens,
