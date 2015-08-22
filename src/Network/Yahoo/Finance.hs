@@ -31,8 +31,8 @@ data StockQuote = StockQuote {
   , yearLow  :: String
 } deriving ( Show, Ord, Eq )
 
-toFloat :: String -> Float
-toFloat s = read s :: Float
+toDouble :: String -> Double
+toDouble s = read s :: Double
 
 instance FromJSON StockQuote where
     parseJSON (Object o) =
