@@ -1,0 +1,25 @@
+{
+ "query": {
+  "count": 1,
+  "created": "2015-08-22T08:14:52Z",
+  "lang": "en-US",
+  "results": {
+   "quote": {
+    "symbol": "^NDX",
+    "AverageDailyVolume": null,
+    "Change": "-187.86",
+    "DaysLow": "4197.27",
+    "DaysHigh": "4361.32",
+    "YearLow": "3700.23",
+    "YearHigh": "4694.13",
+    "MarketCapitalization": null,
+    "LastTradePriceOnly": "4197.27",
+    "DaysRange": "4197.27 - 4361.32",
+    "Name": "NASDAQ-100",
+    "Symbol": "^NDX",
+    "Volume": "0",
+    "StockExchange": "NIM"
+   }
+  }
+ }
+}
