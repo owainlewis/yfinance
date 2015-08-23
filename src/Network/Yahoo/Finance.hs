@@ -99,10 +99,27 @@ getStockQuote symbol =
 -- | Historical data
 --
 -- Generates a query to retrieve all historical data for 1 or many stocks
---
+-- Dates for YQL in format YYYY-MM-DD
+historicalYQLQuery ::
+    String ->
+    String ->
+    String ->
+    String
 historicalYQLQuery stocks startDate endDate =
     interpolate query [("x", normalizedStocks), ("y", quoteString startDate), ("z", quoteString endDate)]
     where normalizedStocks = stocks
           query = mconcat [ "select * from yahoo.finance.historicaldata where "
-                          , "symbol ${x} and startDate = ${y} and endDate = ${z}"
+                          , "symbol #{x} and startDate = #{y} and endDate = #{z}"
                           ]
+
+-- | Get historical prices for one or many stocks
+--
+--   Dates should be in the form 2009-09-11
+--
+historicalPrices ::
+    [String] ->     -- ^ a list of stocks to fetch
+     String ->     -- ^ start date in the form YYYY-MM-DD
+     String ->     -- ^ end date in the form YYYY-MM-DD
+     IO ByteString -- ^ response body
+historicalPrices stocks startDate endDate =
+    runRequest . T.pack $ historicalYQLQuery (buildStockQuery stocks) startDate endDate
