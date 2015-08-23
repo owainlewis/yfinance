@@ -3,23 +3,21 @@
 module Network.Yahoo.Finance
   ( getStockQuote
   , StockQuote(..)
-  , nasdaq
-  , sp500
-  , ftse
-  , aim
+  , toDouble
   ) where
 
-import           Control.Applicative  ((<$>), (<*>))
+import           Control.Applicative       ((<$>), (<*>))
 import           Control.Lens
-import           Control.Monad        (mzero)
+import           Control.Monad             (mzero)
 import           Data.Aeson
-import           Data.ByteString.Lazy as LBS hiding (intercalate, map)
-import           Data.List            (intercalate)
-import qualified Data.Map             as M
-import           Data.Monoid          (Monoid, mconcat, (<>))
-import           Data.String          (IsString)
-import qualified Data.Text            as T
+import           Data.ByteString.Lazy      as LBS hiding (intercalate, map)
+import           Data.List                 (intercalate)
+import qualified Data.Map                  as M
+import           Data.Monoid               (Monoid, mconcat, (<>))
+import           Data.String               (IsString)
+import qualified Data.Text                 as T
 import           Network.Wreq
+import           Network.Yahoo.Interpolate (interpolate)
 
 data StockQuote = StockQuote {
     name     :: String
@@ -78,30 +76,33 @@ run query = decode <$> runRequest (T.pack query)
 runMany :: String -> IO (Maybe [YahooResponse])
 runMany query = decode <$> runRequest (T.pack query)
 
+-- TODO move to util functions ns
+
 quoteString :: (Monoid m, IsString m) => m -> m
 quoteString s = "\"" <> s <> "\""
+
+buildStockQuery :: [String] -> String
+buildStockQuery xs = mconcat ["(", stocks, ")"]
+    where stocks = (intercalate ", ") . (map quoteString) $ xs
 
 -- | Generates a YQL query for 1 or more stock symbols
 --
 generateYQLQuery :: [String] -> String
-generateYQLQuery xs = "select * from yahoo.finance.quote where symbol in " <> query
-    where stocks = (intercalate ", ") . (map quoteString) $ xs
-          query  = mconcat ["(", stocks, ")"]
+generateYQLQuery stocks =
+    "select * from yahoo.finance.quote where symbol in " <> buildStockQuery stocks
 
 -- | Fetch a stock quote from Yahoo Finance eg. getStockQuote (T.pack "GOOGL")
 getStockQuote :: String -> IO (Maybe StockQuote)
-getStockQuote symbol = fmap quote <$> (run $ generateYQLQuery [symbol])
+getStockQuote symbol =
+    fmap quote <$> (run $ generateYQLQuery [symbol])
 
--- Indexes
-
-nasdaq :: IO (Maybe StockQuote)
-nasdaq = getStockQuote "^NDX"
-
-sp500 :: IO (Maybe StockQuote)
-sp500 = getStockQuote "^GSPC"
-
-ftse :: IO (Maybe StockQuote)
-ftse = getStockQuote "^FTSE"
-
-aim :: IO (Maybe StockQuote)
-aim = getStockQuote "^FTAI"
+-- | Historical data
+--
+-- Generates a query to retrieve all historical data for 1 or many stocks
+--
+historicalYQLQuery stocks startDate endDate =
+    interpolate query [("x", normalizedStocks), ("y", quoteString startDate), ("z", quoteString endDate)]
+    where normalizedStocks = stocks
+          query = mconcat [ "select * from yahoo.finance.historicaldata where "
+                          , "symbol ${x} and startDate = ${y} and endDate = ${z}"
+                          ]
