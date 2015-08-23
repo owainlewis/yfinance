@@ -11,6 +11,10 @@ import Network.Yahoo.Finance
 
 getStockQuote "YHOO"
 
+-- λ> getStockQuote "YHOO"
+-- Just (StockQuote {name = "Yahoo! Inc.", symbol = "YHOO", price = "32.93", change = "-1.17",
+--                   dayHigh = "34.02", dayLow = "32.91", yearHigh = "52.62", yearLow = "32.91"})
+
 ```
 
 ## Get the current stock price for a company
@@ -32,7 +36,7 @@ module Example where
 
 import Network.Yahoo.Finance
 
---λ> nasdaq
+-- λ> nasdaq
 -- Just (StockQuote {name = "NASDAQ-100",
 --                   symbol = "^NDX",
 --                   price = "4197.27",
