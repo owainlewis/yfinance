@@ -28,15 +28,18 @@ newtype StockQuoteList = StockQuoteList {
     stocks :: [StockQuote]
 } deriving ( Show )
 
-newtype YahooResponse = YahooResponse {
-    quote :: StockQuote
+-- | Polymorphic type for Yahoo finance repsonses
+--
+data YahooResponse a = YahooResponse {
+    quote :: a
 } deriving ( Show )
 
-instance FromJSON YahooResponse where
+instance (FromJSON a) => FromJSON (YahooResponse a) where
     parseJSON (Object o) =
         YahooResponse <$> ((o .: "query") >>= (.: "results") >>= (.: "quote"))
     parseJSON _ = mzero
 
+-- | Runs a YQL query
 runRequest ::
   T.Text ->
   IO ByteString
@@ -49,10 +52,10 @@ runRequest yql = do
   r <- getWith opts yahoo
   return $ r ^. responseBody
 
-run :: String -> IO (Maybe YahooResponse)
+run :: String -> IO (Maybe (YahooResponse StockQuote))
 run query = decode <$> runRequest (T.pack query)
 
-runMany :: String -> IO (Maybe [YahooResponse])
+runMany :: String -> IO (Maybe [(YahooResponse StockQuote)])
 runMany query = decode <$> runRequest (T.pack query)
 
 -- TODO move to util functions ns
@@ -93,7 +96,7 @@ historicalYQLQuery stock startDate endDate =
 
 -- | Get historical prices for one or many stocks
 --
---   Dates should be in the form 2009-09-11
+--   Dates should be in the form YYYY-MM-DD
 --
 historicalPrices ::
      String ->     -- ^ a stock to fetch
@@ -102,3 +105,9 @@ historicalPrices ::
      IO ByteString -- ^ response body
 historicalPrices stock startDate endDate =
     runRequest . T.pack $ historicalYQLQuery stock startDate endDate
+
+-- | Fetch historical price information for a stock
+--
+historical :: String -> String -> String -> IO (Maybe (YahooResponse [HistoricalQuote]))
+historical symbol startDate endDate =
+    decode <$> historicalPrices symbol startDate endDate
