@@ -46,3 +46,17 @@ import Network.Yahoo.Finance
 --                   yearHigh = "4694.13",
 --                   yearLow = "3700.23"})
 ```
+
+
+## Historical Prices
+
+This example shows how to fetch the Stock prices for GOOGL between 2014 and 2015
+
+```haskell
+module Example where
+
+import Network.Yahoo.Finance
+
+-- λ> historical "GOOGL" "2014-01-01" "2015-01-01"
+
+```
