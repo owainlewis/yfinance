@@ -1,5 +1,20 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE OverloadedStrings #-}
+
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Network.Yahoo.Finance
+-- Copyright   :  2015 Owain Lewis
+-- License     :  public domain
+--
+-- Maintainer  :  owain@owainlewis.com
+-- Stability   :  experimental
+-- Portability :  portable
+--
+-- Module for extracting stock price information from Yahoo Finance
+--
+-----------------------------------------------------------------------------
+
 module Network.Yahoo.Finance
   ( getStockQuote
   , StockQuote(..)
