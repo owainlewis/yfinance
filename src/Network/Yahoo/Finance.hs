@@ -6,44 +6,23 @@ module Network.Yahoo.Finance
   , toDouble
   ) where
 
-import           Control.Applicative       ((<$>), (<*>))
+import           Control.Applicative           ((<$>), (<*>))
 import           Control.Lens
-import           Control.Monad             (mzero)
+import           Control.Monad                 (mzero)
 import           Data.Aeson
-import           Data.ByteString.Lazy      as LBS hiding (intercalate, map)
-import           Data.List                 (intercalate)
-import qualified Data.Map                  as M
-import           Data.Monoid               (Monoid, mconcat, (<>))
-import           Data.String               (IsString)
-import qualified Data.Text                 as T
+import           Data.ByteString.Lazy          as LBS hiding (intercalate, map)
+import           Data.List                     (intercalate)
+import qualified Data.Map                      as M
+import           Data.Monoid                   (Monoid, mconcat, (<>))
+import           Data.String                   (IsString)
+import qualified Data.Text                     as T
 import           Network.Wreq
-import           Network.Yahoo.Interpolate (interpolate)
-
-data StockQuote = StockQuote {
-    name     :: String
-  , symbol   :: String
-  , price    :: String
-  , change   :: String
-  , dayHigh  :: String
-  , dayLow   :: String
-  , yearHigh :: String
-  , yearLow  :: String
-} deriving ( Show, Ord, Eq )
+import           Network.Yahoo.HistoricalQuote
+import           Network.Yahoo.Interpolate     (interpolate)
+import           Network.Yahoo.StockQuote
 
 toDouble :: String -> Double
 toDouble s = read s :: Double
-
-instance FromJSON StockQuote where
-    parseJSON (Object o) =
-        StockQuote <$> o .: "Name"
-                   <*> o .: "Symbol"
-                   <*> o .: "LastTradePriceOnly"
-                   <*> o .: "Change"
-                   <*> o .: "DaysHigh"
-                   <*> o .: "DaysLow"
-                   <*> o .: "YearHigh"
-                   <*> o .: "YearLow"
-    parseJSON _ = mzero
 
 newtype StockQuoteList = StockQuoteList {
     stocks :: [StockQuote]
@@ -105,11 +84,11 @@ historicalYQLQuery ::
     String ->
     String ->
     String
-historicalYQLQuery stocks startDate endDate =
-    interpolate query [("x", normalizedStocks), ("y", quoteString startDate), ("z", quoteString endDate)]
-    where normalizedStocks = stocks
+historicalYQLQuery stock startDate endDate =
+    interpolate query [("x", quoteString stock), ("y", quoteString startDate), ("z", quoteString endDate)]
+    where
           query = mconcat [ "select * from yahoo.finance.historicaldata where "
-                          , "symbol #{x} and startDate = #{y} and endDate = #{z}"
+                          , "symbol=#{x} and startDate=#{y} and endDate=#{z}"
                           ]
 
 -- | Get historical prices for one or many stocks
@@ -117,9 +96,9 @@ historicalYQLQuery stocks startDate endDate =
 --   Dates should be in the form 2009-09-11
 --
 historicalPrices ::
-    [String] ->     -- ^ a list of stocks to fetch
+     String ->     -- ^ a stock to fetch
      String ->     -- ^ start date in the form YYYY-MM-DD
      String ->     -- ^ end date in the form YYYY-MM-DD
      IO ByteString -- ^ response body
-historicalPrices stocks startDate endDate =
-    runRequest . T.pack $ historicalYQLQuery (buildStockQuery stocks) startDate endDate
+historicalPrices stock startDate endDate =
+    runRequest . T.pack $ historicalYQLQuery stock startDate endDate
