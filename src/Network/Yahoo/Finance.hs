@@ -1,6 +1,5 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE OverloadedStrings #-}
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Network.Yahoo.Finance
@@ -14,7 +13,6 @@
 -- Module for extracting stock price information from Yahoo Finance
 --
 -----------------------------------------------------------------------------
-
 module Network.Yahoo.Finance
   ( getStockQuote
   , StockQuote(..)
