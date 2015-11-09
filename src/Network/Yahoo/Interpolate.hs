@@ -1,5 +1,7 @@
 module Network.Yahoo.Interpolate
-    ( interpolate )
+    ( interpolate
+    , toMarker
+    , replace )
     where
 
 import           Data.Monoid ((<>))
