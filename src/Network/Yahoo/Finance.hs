@@ -37,9 +37,7 @@ import           Network.Yahoo.StockQuote
 toDouble :: String -> Double
 toDouble s = read s :: Double
 
-newtype StockQuoteList = StockQuoteList {
-    stocks :: [StockQuote]
-} deriving ( Show )
+newtype StockQuoteList = StockQuoteList { stocks :: [StockQuote] } deriving ( Show )
 
 -- | Polymorphic type for Yahoo finance repsonses
 --
