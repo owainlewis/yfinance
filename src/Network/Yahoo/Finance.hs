@@ -69,8 +69,6 @@ run query = decode <$> runRequest (T.pack query)
 runMany :: String -> IO (Maybe [(YahooResponse StockQuote)])
 runMany query = decode <$> runRequest (T.pack query)
 
--- TODO move to util functions ns
-
 quoteString :: (Monoid m, IsString m) => m -> m
 quoteString s = "\"" <> s <> "\""
 
@@ -84,7 +82,10 @@ generateYQLQuery :: [String] -> String
 generateYQLQuery stocks =
     "select * from yahoo.finance.quote where symbol in " <> buildStockQuery stocks
 
--- | Fetch a stock quote from Yahoo Finance eg. getStockQuote (T.pack "GOOGL")
+-- | Fetch a stock quote from Yahoo Finance
+--
+-- >> getStockQuote (T.pack "GOOGL")
+--
 getStockQuote :: String -> IO (Maybe StockQuote)
 getStockQuote symbol =
     fmap quote <$> (run $ generateYQLQuery [symbol])
