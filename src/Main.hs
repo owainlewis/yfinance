@@ -1,4 +1,15 @@
-module Main where
+module Main 
+   ( nasdaq
+   , sp500
+   , ftse
+   , ftse250
+   , aim
+   , dax
+   , oil
+   , gold
+   , silver
+   , copper
+   ) where
 
 import           Network.Yahoo.Finance
 
@@ -25,6 +36,7 @@ dax :: SQ
 dax = getStockQuote "^GDAXI"
 
 -- Commodities
+---------------------------------------------------------------
 
 oil :: SQ
 oil = getStockQuote "BZX15.NYM"
